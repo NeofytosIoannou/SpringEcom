@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,8 +84,16 @@ public class ProductController {
     }
 
     @GetMapping("/products/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword){
-        List<Product> products=productService.searchProducts(keyword);
-        return new ResponseEntity<>(products,HttpStatus.OK);
+    public ResponseEntity<List<Product>> searchProducts(
+            @RequestParam(name = "keyword", required = false) String keyword) {
+
+        String normalized = keyword == null ? "" : keyword.trim();
+
+        if (normalized.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        List<Product> products = productService.searchProducts(normalized);
+        return ResponseEntity.ok(products);
     }
 }
