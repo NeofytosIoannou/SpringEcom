@@ -93,17 +93,8 @@ public class ProductController {
     }
 
     @GetMapping("/products/search")
-    public ResponseEntity<List<Product>> searchProducts(
-            @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "query", required = false) String query) {
-        String term = (keyword != null && !keyword.isBlank()) ? keyword : query;
-        String normalized = term == null ? "" : term.trim();
-
-        if (normalized.isEmpty()) {
-            return ResponseEntity.ok(productService.getAllProducts());
-        }
-
-        List<Product> products = productService.searchProducts(normalized);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
+        List<Product> products = productService.searchProducts(keyword);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }
