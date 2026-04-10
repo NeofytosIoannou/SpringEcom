@@ -1,6 +1,7 @@
 package com.neo.springecom.controller;
 
 import com.neo.springecom.model.Product;
+import com.neo.springecom.model.dto.ProductSearchDto;
 import com.neo.springecom.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -84,7 +84,7 @@ public class ProductController {
     }
 
     @GetMapping("/products/search")
-    public ResponseEntity<List<Product>> searchProducts(
+    public ResponseEntity<List<ProductSearchDto>> searchProducts(
             @RequestParam(name = "keyword", required = false) String keyword) {
 
         String normalized = keyword == null ? "" : keyword.trim();
@@ -93,7 +93,7 @@ public class ProductController {
             return ResponseEntity.ok(Collections.emptyList());
         }
 
-        List<Product> products = productService.searchProducts(normalized);
+        List<ProductSearchDto> products = productService.searchProducts(normalized);
         return ResponseEntity.ok(products);
     }
 }
