@@ -1,7 +1,6 @@
 package com.neo.springecom.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,6 @@ public class Product {
     private String imageName;
     private String imageType;
     @Lob
-    @JsonIgnore
     private byte[] imageData;
 
 
