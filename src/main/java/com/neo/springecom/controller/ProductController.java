@@ -86,10 +86,14 @@ public class ProductController {
     @GetMapping("/products/search")
     public ResponseEntity<List<Product>> searchProducts(
             @RequestParam(name = "keyword", required = false) String keyword) {
+
         String normalized = keyword == null ? "" : keyword.trim();
+
         if (normalized.isEmpty()) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        return ResponseEntity.ok(productService.searchProducts(normalized));
+
+        List<Product> products = productService.searchProducts(normalized);
+        return ResponseEntity.ok(products);
     }
 }
