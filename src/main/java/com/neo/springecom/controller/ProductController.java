@@ -1,7 +1,6 @@
 package com.neo.springecom.controller;
 
 import com.neo.springecom.model.Product;
-import com.neo.springecom.model.dto.ProductSearchDto;
 import com.neo.springecom.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -39,10 +37,21 @@ public class ProductController {
     }
      @GetMapping("product/{productId}/image")
      public ResponseEntity<byte[]> getImageByProductId(@PathVariable int productId){
-        Product product=productService.getProductById(productId);
-        if(product!= null)
-            return new ResponseEntity<>(product.getImageData(),HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+         Product product=productService.getProductById(productId);
+         if(product!= null && product.getImageData() != null) {
+             MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+             if (product.getImageType() != null && !product.getImageType().isBlank()) {
+                 try {
+                     mediaType = MediaType.parseMediaType(product.getImageType());
+                 } catch (IllegalArgumentException ignored) {
+                     mediaType = MediaType.APPLICATION_OCTET_STREAM;
+                 }
+             }
+             return ResponseEntity.ok()
+                     .contentType(mediaType)
+                     .body(product.getImageData());
+         }
+         else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
      }
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -84,16 +93,17 @@ public class ProductController {
     }
 
     @GetMapping("/products/search")
-    public ResponseEntity<List<ProductSearchDto>> searchProducts(
-            @RequestParam(name = "keyword", required = false) String keyword) {
-
-        String normalized = keyword == null ? "" : keyword.trim();
+    public ResponseEntity<List<Product>> searchProducts(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "query", required = false) String query) {
+        String term = (keyword != null && !keyword.isBlank()) ? keyword : query;
+        String normalized = term == null ? "" : term.trim();
 
         if (normalized.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
+            return ResponseEntity.ok(productService.getAllProducts());
         }
 
-        List<ProductSearchDto> products = productService.searchProducts(normalized);
+        List<Product> products = productService.searchProducts(normalized);
         return ResponseEntity.ok(products);
     }
 }

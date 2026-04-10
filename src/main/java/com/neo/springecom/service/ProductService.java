@@ -1,7 +1,6 @@
 package com.neo.springecom.service;
 
 import com.neo.springecom.model.Product;
-import com.neo.springecom.model.dto.ProductSearchDto;
 import com.neo.springecom.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class ProductService {
          productRepo.deleteById(id);
     }
 
-    public List<ProductSearchDto> searchProducts(String keyword) {
+    public List<Product> searchProducts(String keyword) {
         return productRepo.searchProducts(keyword);
     }
 }
