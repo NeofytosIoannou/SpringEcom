@@ -1,6 +1,7 @@
 package com.neo.springecom.controller;
 
 import com.neo.springecom.model.Product;
+import com.neo.springecom.model.dto.ProductImageResponse;
 import com.neo.springecom.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,19 +38,19 @@ public class ProductController {
     }
      @GetMapping("product/{productId}/image")
      public ResponseEntity<byte[]> getImageByProductId(@PathVariable int productId){
-         Product product=productService.getProductById(productId);
-         if(product!= null && product.getImageData() != null) {
+         ProductImageResponse productImage = productService.getProductImageById(productId);
+         if(productImage != null && productImage.imageData() != null) {
              MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-             if (product.getImageType() != null && !product.getImageType().isBlank()) {
+             if (productImage.imageType() != null && !productImage.imageType().isBlank()) {
                  try {
-                     mediaType = MediaType.parseMediaType(product.getImageType());
+                     mediaType = MediaType.parseMediaType(productImage.imageType());
                  } catch (IllegalArgumentException ignored) {
                      mediaType = MediaType.APPLICATION_OCTET_STREAM;
                  }
              }
              return ResponseEntity.ok()
                      .contentType(mediaType)
-                     .body(product.getImageData());
+                     .body(productImage.imageData());
          }
          else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
